@@ -2,8 +2,10 @@ import React, { useState } from "react";
 
 import {FcGoogle} from 'react-icons/fc';
 import {RiTwitterXLine} from 'react-icons/ri'
-import {auth} from '../firabase/config'
-import {createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword} from 'firebase/auth'
+import {auth, provider} from '../firabase/config'
+import {createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup} from 'firebase/auth'
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 
 const AuthPage = () => {
@@ -13,20 +15,25 @@ const AuthPage = () => {
     const [password,setPassword] = useState('')
     const [error,setError]=useState(false);
 
+    const navigate = useNavigate()
+
     const handleSubmit = (e)=> {
         e.preventDefault()
             if(SignUp) {
                 //yeni hesap oluştur
 
                 createUserWithEmailAndPassword(auth,email,password)
-                .then(res => console.log("hesap oluştu"))
-                .catch(err => console.log("hata oldu",err))
+                .then(res => toast.success("Hesap oluşturuldu"))
+                .catch(err => {
+                    toast.error("Bir hata oluştu")
+                    console.log("hata oldu",err)})
             }else {
                 //var olan hesaba gir
 
                 signInWithEmailAndPassword(auth,email,password)
-                .then(()=> console.log("giriş Yapıldı"))
+                .then(()=> toast.success("Giriş Yapıldı"))
                 .catch(err=> {
+                    toast.error("Bir hata oluştu")
                     console.log("hata oluştu",err.code)
                     //şifreyi unuttu ise
                     if(err.code=== 'auth/invalid-login-credentials') {
@@ -36,7 +43,8 @@ const AuthPage = () => {
             }
     }
     const handleGoogle = ()=> {
-        
+        signInWithPopup(auth,provider)
+        .then(()=> navigate("/feed"))
     }
 
     const resetPassword = ()=> {
@@ -73,16 +81,16 @@ const AuthPage = () => {
                     <span>
                         {SignUp ? ' Hessabınız varsa ' :'Hesabınız yoksa'}
                     </span>
-                    <span onClick={()=> setSignUp(!SignUp)}>
+                    <span className="cursor-pointer text-blue-600" onClick={()=> setSignUp(!SignUp)}>
                         {SignUp ? 'Giriş Yap ': ' Kaydolun'}
                     </span>
                 </p>
         </form>
 
         {error && (
-            <p className="text-red mt-5 text-center"
+            <p className="mt-5 text-center text-red-500 cursor-pointer"
             onClick={resetPassword}>
-                Şifrenizi Mi Unuttunuz ?</p>
+                Şifrenizi mi Unuttunuz ?</p>
         )}
       </div>
     </section>
