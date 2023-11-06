@@ -14,7 +14,7 @@ const Nav = ({user}) => {
     <RiTwitterXLine className="text-4xl mb-4"/>
 
     {navSections.map((i)=> (
-      <div className='flex justify-center md:justify-normal items-center gap-3 text-2xl md:text-lx p-3 cursor-pointer transition rounded-lg hover:bg-[#4c4a4a]'>
+      <div key={i.title} className='flex justify-center md:justify-normal items-center gap-3 text-2xl md:text-lx p-3 cursor-pointer transition rounded-lg hover:bg-[#4c4a4a]'>
         {i.icon}
         <span className='hidden md:block'>{i.title}</span>
       </div>

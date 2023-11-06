@@ -1,17 +1,61 @@
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import React from 'react'
 import {BsFillImageFill} from 'react-icons/bs'
+import { toast } from 'react-toastify'
+import { db } from '../firabase/config';
+
+
 
 const FormMain = ({user}) => {
+
+  //kolleksiyonun referansını alma
+  const tweetCol = collection(db,"tweets")
+
+  const handleSubmit =async (e)=> {
+   
+    e.preventDefault()
+
+    //formdaki verilere erişme
+    const textContent = e.target[0].value;
+    const imageContent = e.target[1].files[0];
+
+     //yazı veya resim içeriği var mı  ?
+
+     if(!textContent && !imageContent) {
+      return toast.info("Lütfen tweet içeriği ekleyin")
+     }
+
+      //kolaysiyona tweet i kaydet
+      await addDoc(tweetCol, {
+        textContent,
+        imageContent:null,
+        createdAt:serverTimestamp(),
+        user:{
+         id:user.uid,
+         name : user.displayName,
+         photo:user.photoURL
+        },
+        likes:[],
+        isEdited:false,
+      } )
+
+
+  }
   return (
-    <form className='flex gap-3 p-4 border-b-[1px] border-gray-700'>
+    <form onSubmit={handleSubmit} className='flex gap-3 p-4 border-b-[1px] border-gray-700'>
         <img className='rounded-full h-[35px] md:h-[45px]' src={user?.photoURL}/>
-        <div>
-            <input className='w-full bg-transparent my-2 outline-none text-normal md:text-xl' type="text"
+        <div className='w-full'>
+            <input className=' w-full bg-transparent my-2 outline-none text-normal md:text-xl' type="text"
             placeholder='Neler Oluyor ? '/>
-            <div>
+            <div className=' w-full flex justify-between items-center'>
+                {/* bu ikona tılayınca inputun devreye girmesi için  inputu labela id ile bağladık  inputu gizledik */}
+                <label className='hover:bg-gray-800 text-lg transition p-4 cursor-pointer rounded-full' htmlFor="image">
                 <BsFillImageFill/>
-                <input type="file" />
-                <button>Tweetle</button>
+                </label>
+                <input className='hidden' id='image' type="file" />
+
+
+                <button className='bg-blue-600 flex items-center px-4 py-2 rounded-full transition hover:bg-blue-800'>Tweetle</button>
             </div>
         </div>
     </form>
