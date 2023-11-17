@@ -6,11 +6,18 @@ import { AiOutlineHeart } from 'react-icons/ai';
 import { FiShare2 } from 'react-icons/fi';
 import moment from 'moment/moment';
 import 'moment/locale/tr'
+import { auth } from '../../firabase/config';
+import DropDown from './DropDown';
 
 
 const PostTweet = ({tweet}) => {
     //tarih verisi şu andan ne kadar önce hesaplandı
     const date = moment(tweet.createdAt?.toDate()).fromNow()
+
+    const handleEdit = ()=>{
+      
+    }
+  const handleDelete = ()=>{}
   return (
     <div className='flex gap-3 p-3 border-b-[1px] border-gray-700'>
       <img className='w-12 h-12  rounded-full' src={tweet.user.photo} alt="" />
@@ -22,7 +29,9 @@ const PostTweet = ({tweet}) => {
                 <p className='text-gray'>@{tweet.user.name?.toLowerCase().replace(" ","_")}</p>
                 <p className='text-gray'>{date}</p>
             </div>
-            <p></p>
+            {/* Ayar */}
+            {tweet.user.id === auth.currentUser.uid && <DropDown handleEdit={handleEdit} handleDelete={handleDelete} /> }
+         
         </div>
         {/* Orta Kısım -> tweet içeriği */}
         <div className='my-3'>
@@ -30,7 +39,7 @@ const PostTweet = ({tweet}) => {
             {tweet.textContent}
             </p>
             {tweet.imageContent && 
-                <img src={tweet.imageContent} />
+                <img className='my-2 rounded-lg w-full object-cover mx-auto max-h-[440px]' src={tweet.imageContent} />
             }
         </div>
         {/* alt kısım ->etlileşim butonları */}
